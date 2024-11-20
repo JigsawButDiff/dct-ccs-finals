@@ -123,3 +123,25 @@
         }
     }
     ?>
+
+<?php
+// Start session if it's not already started
+if (session_status() == PHP_SESSION_NONE) {
+    
+}
+
+/**
+ * Logs the user out by destroying the session and redirecting to a given page.
+ */
+function logout($redirectUrl) {
+    // Destroy all session variables
+    session_unset();
+
+    // Destroy the session itself
+    session_destroy();
+
+    // Redirect to the specified page (e.g., login page)
+    header("Location: $redirectUrl");
+    exit();
+}
+?>

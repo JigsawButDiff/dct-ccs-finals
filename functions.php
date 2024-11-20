@@ -132,7 +132,57 @@
             exit("Database connection failed: " . $e->getMessage());
         }
     }
+    function displayErrors($errors) {
+        if (empty($errors)) return "";
+    
+        $errorHtml = '<div class="alert alert-danger alert-dismissible fade show" role="alert">';
+        $errorHtml .= '<strong>System Alerts</strong><ul>';
+    
+        foreach ($errors as $error) {
+            $errorHtml .= '<li>';
+            $errorHtml .= is_array($error) 
+                ? implode(", ", $error) 
+                : htmlspecialchars($error);
+            $errorHtml .= '</li>';
+        }
+    
+        $errorHtml .= '</ul>';
+        $errorHtml .= '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+        $errorHtml .= '</div>';
+    
+        return $errorHtml;
+    }
    
+    function fetchSubjects() {
+        global $db; // Ensure you're using the global database connection variable
+        if (!$db) {
+            die("No Subject Found.");
+        }
+        $db = new mysqli('localhost', 'username', 'password', 'database_name');
+
+if ($db->connect_error) {
+    die("Connection failed: " . $db->connect_error);
+}
+    
+        if (!$db) {
+            throw new Exception("Database connection is not initialized.");
+        }
+    
+        $query = "SELECT * FROM subjects";
+        $result = $db->query($query);
+    
+        if (!$result) {
+            throw new Exception("Error executing query: " . $db->error);
+        }
+    
+        $subjects = [];
+        while ($row = $result->fetch_assoc()) {
+            $subjects[] = $row;
+        }
+    
+        return $subjects;
+    }
+    
 
 
 
@@ -152,6 +202,24 @@ function GETdata($key){
 
 function isPost(){
     return $_SERVER['REQUEST_METHOD'] == "POST";
+}
+
+
+// Assuming you're using mysqli for database connection
+function addSubject($subject_code, $subject_name) {
+    global $db; // Ensure this is the correct $db object connected to your database
+    
+    // Prepare the query to insert the new subject into the database
+    $stmt = $db->prepare("INSERT INTO subjects (subject_code, subject_name) VALUES (?, ?)");
+    $stmt->bind_param("ss", $subject_code, $subject_name); // Bind parameters
+
+    // Execute the query and check if it was successful
+    if ($stmt->execute()) {
+        echo "Subject added successfully!";
+    } else {
+        echo "Error adding subject: " . $stmt->error;
+    }
+    $stmt->close();
 }
 
 

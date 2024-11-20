@@ -4,6 +4,7 @@ guardDashboard();
 
 $title="Dashboard";
 $logoutPage = 'logout.php';
+$subjectPage = './Subjects/addSubject.php';
 require './partials/header.php';
 require './partials/side-bar.php';
 

@@ -22,7 +22,7 @@
         }
     }
 
-    
+
     function guardDashboard(){
         $loginPage = '../index.php';
         if(!isset($_SESSION['email'])){
@@ -30,7 +30,7 @@
         }
     }
     
-    
+
     
     /**
      * Validates login credentials.
@@ -132,4 +132,45 @@
             exit("Database connection failed: " . $e->getMessage());
         }
     }
-    ?>
+   
+
+
+
+
+// Start session if it's not already started
+if (session_status() == PHP_SESSION_NONE) {
+    
+}
+
+/**
+ * Logs the user out by destroying the session and redirecting to a given page.
+ */
+function GETdata($key){
+    return $_GET["$key"];
+}
+
+
+function isPost(){
+    return $_SERVER['REQUEST_METHOD'] == "POST";
+}
+
+
+
+function logout($indexPage) {
+    // Unset the 'email' session variable
+    unset($_SESSION['email']);
+
+    // Destroy the session
+    session_destroy();
+
+    // Redirect to the login page (index.php)
+    header("Location: $indexPage");
+    exit;
+}
+
+
+
+
+
+    
+?>

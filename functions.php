@@ -153,37 +153,147 @@
         return $errorHtml;
     }
    
-    function fetchSubjects() {
-        global $db; // Ensure you're using the global database connection variable
-        if (!$db) {
-            die("No Subject Found.");
-        }
-        $db = new mysqli('localhost', 'username', 'password', 'database_name');
+  
+function fetchSubjects() {
+    // Get the database connection
+    $conn = connectToDatabase();
 
-if ($db->connect_error) {
-    die("Connection failed: " . $db->connect_error);
+    try {
+        // Prepare SQL query to fetch all subjects
+        $sql = "SELECT * FROM subjects";
+        $stmt = $conn->prepare($sql);
+
+        // Execute the query
+        $stmt->execute();
+
+        // Fetch all subjects as an associative array
+        $subjects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Return the list of subjects
+        return $subjects;
+    } catch (PDOException $e) {
+        // Return an empty array in case of error
+        return [];
+    }
 }
     
-        if (!$db) {
-            throw new Exception("Database connection is not initialized.");
+        function addSubject($subject_code, $subject_name) {
+        $validateSubjectData = validateSubjectData($subject_code, $subject_name);
+        $checkDuplicate = checkDuplicateSubjectData($subject_code, $subject_name);
+    
+        if(count($validateSubjectData) > 0 ){
+            echo displayErrors($validateSubjectData);
+            return;
         }
     
-        $query = "SELECT * FROM subjects";
-        $result = $db->query($query);
-    
-        if (!$result) {
-            throw new Exception("Error executing query: " . $db->error);
+        if(count($checkDuplicate) == 1 ){
+            echo displayErrors($checkDuplicate);
+            return;
         }
     
-        $subjects = [];
-        while ($row = $result->fetch_assoc()) {
-            $subjects[] = $row;
-        }
     
-        return $subjects;
+        // Get database connection
+        $conn = connectToDatabase();
+    
+        try {
+            // Prepare SQL query to insert subject into the database
+            $sql = "INSERT INTO Subjects (Subject_code, Subject_name) VALUES (:Subject_code, :Subject_name)";
+            $stmt = $conn->prepare($sql);
+    
+            // Bind parameters to the SQL query
+            $stmt->bindParam(':subject_code', $subject_code);
+            $stmt->bindParam(':subject_name', $subject_name);
+    
+            // Execute the query
+            if ($stmt->execute()) {
+                return true; // Subject successfully added
+            } else {
+                return "Failed to add subject."; // Query execution failed
+            }
+        } catch (PDOException $e) {
+            // Return error message if the query fails
+            return "Error: " . $e->getMessage();
+        }
     }
     
+    function validateSubjectData($subject_code, $subject_name ) {
+        $errors = [];
+    
+        // Check if subject_code is empty
+        if (empty($subject_code)) {
+            $errors[] = "Subject code is required.";
+        }
+    
+        // Check if subject_name is empty
+        if (empty($subject_name)) {
+            $errors[] = "Subject name is required.";
+        }
+    
+        return $errors;
+    }
+    function checkDuplicateSubjectData($subject_code, $subject_name) {
+        // Get database connection
+        $conn = connectToDatabase();
+    
+        // Query to check if the subject_code already exists in the database
+        $sql = "SELECT * FROM subjects WHERE subject_code = :subject_code OR subject_name = :subject_name";
+        $stmt = $conn->prepare($sql);
+    
+        // Bind parameters
+        $stmt->bindParam(':subject_code', $subject_code);
+        $stmt->bindParam(':subject_name', $subject_name);
+    
+        // Execute the query
+        $stmt->execute();
+    
+        // Fetch the results
+        $existing_subject = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        // If a subject exists with the same code or name, return an error
+        if ($existing_subject) {
+            return ["Duplicate subject found: The subject code or name already exists."];
+        }
+    
+        return [];
+    }
+    
+    // Function to check if the subject already exists in the database (duplicate check)
+function checkDuplicateSubjectForEdit($subject_name) {
+    // Get database connection
+    $conn = connectToDatabase();
 
+    // Query to check if the subject_code already exists in the database
+    $sql = "SELECT * FROM subjects WHERE subject_name = :subject_name";
+    $stmt = $conn->prepare($sql);
+
+    // Bind parameters
+    $stmt->bindParam(':subject_name', $subject_name);
+
+    // Execute the query
+    $stmt->execute();
+
+    // Fetch the results
+    $existing_subject = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // If a subject exists with the same code or name, return an error
+    if ($existing_subject) {
+        return ["Duplicate subject found: The subject code or name already exists."];
+    }
+
+    return [];
+}
+
+
+    
+    
+
+function getSubjectByCode($subject_code) {
+    $pdo = connectToDatabase();
+    $query = "SELECT * FROM subjects WHERE subject_code = :subject_code";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([':subject_code' => $subject_code]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
 
 
@@ -205,21 +315,16 @@ function isPost(){
 }
 
 
-// Assuming you're using mysqli for database connection
-function addSubject($subject_code, $subject_name) {
-    global $db; // Ensure this is the correct $db object connected to your database
-    
-    // Prepare the query to insert the new subject into the database
-    $stmt = $db->prepare("INSERT INTO subjects (subject_code, subject_name) VALUES (?, ?)");
-    $stmt->bind_param("ss", $subject_code, $subject_name); // Bind parameters
 
-    // Execute the query and check if it was successful
-    if ($stmt->execute()) {
-        echo "Subject added successfully!";
-    } else {
-        echo "Error adding subject: " . $stmt->error;
-    }
-    $stmt->close();
+
+// Check if the form is submitted via POST method
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Sanitize and assign the POST data to variables
+    $subject_code = isset($_POST['subject_code']) ? $_POST['subject_code'] : null;
+    $subject_name = isset($_POST['subject_name']) ? $_POST['subject_name'] : null;
+
+    // Call the function to add the subject to the database
+    addSubject($subject_code, $subject_name);
 }
 
 

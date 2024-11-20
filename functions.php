@@ -133,15 +133,32 @@ if (session_status() == PHP_SESSION_NONE) {
 /**
  * Logs the user out by destroying the session and redirecting to a given page.
  */
-function logout($redirectUrl) {
-    // Destroy all session variables
-    session_unset();
+function GETdata($key){
+    return $_GET["$key"];
+}
 
-    // Destroy the session itself
+
+function isPost(){
+    return $_SERVER['REQUEST_METHOD'] == "POST";
+}
+
+
+
+function logout($indexPage) {
+    // Unset the 'email' session variable
+    unset($_SESSION['email']);
+
+    // Destroy the session
     session_destroy();
 
-    // Redirect to the specified page (e.g., login page)
-    header("Location: $redirectUrl");
-    exit();
+    // Redirect to the login page (index.php)
+    header("Location: $indexPage");
+    exit;
 }
+
+
+
+
+
+    
 ?>

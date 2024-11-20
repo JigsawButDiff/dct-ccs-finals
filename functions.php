@@ -22,6 +22,7 @@
         }
     }
 
+
     function guardDashboard(){
         $loginPage = '../index.php';
         if(!isset($_SESSION['email'])){
@@ -29,6 +30,7 @@
         }
     }
     
+
     
     /**
      * Validates login credentials.

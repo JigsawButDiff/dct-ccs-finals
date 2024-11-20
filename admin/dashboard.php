@@ -54,5 +54,3 @@ require './partials/side-bar.php';
 include ('./partials/footer.php');
 ?>
 
-
-<

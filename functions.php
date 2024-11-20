@@ -21,6 +21,16 @@
             exit();
         }
     }
+
+    
+    function guardDashboard(){
+        $loginPage = '../index.php';
+        if(!isset($_SESSION['email'])){
+            header("Location: $loginPage");
+        }
+    }
+    
+    
     
     /**
      * Validates login credentials.

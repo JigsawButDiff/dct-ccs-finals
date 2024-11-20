@@ -21,6 +21,14 @@
             exit();
         }
     }
+
+    function guardDashboard(){
+        $loginPage = '../index.php';
+        if(!isset($_SESSION['email'])){
+            header("Location: $loginPage");
+        }
+    }
+    
     
     /**
      * Validates login credentials.
@@ -122,9 +130,11 @@
             exit("Database connection failed: " . $e->getMessage());
         }
     }
-    ?>
+   
 
-<?php
+
+
+
 // Start session if it's not already started
 if (session_status() == PHP_SESSION_NONE) {
     

@@ -1,10 +1,16 @@
 <?php
+require '../functions.php';
+guardDashboard();
+
 $title="Dashboard";
 $logoutPage = 'logout.php';
-include('./partials/side-bar.php');
-include('./partials/header.php');
-?>
+require './partials/header.php';
+require './partials/side-bar.php';
 
+
+
+
+?>
 
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">    
     <h1 class="h2">Dashboard</h1>        

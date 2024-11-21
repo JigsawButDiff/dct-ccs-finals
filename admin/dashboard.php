@@ -2,6 +2,7 @@
 require '../functions.php';
 guardDashboard();
 
+
 $title="Dashboard";
 $logoutPage = 'logout.php';
 $subjectPage = './Subjects/addSubject.php';

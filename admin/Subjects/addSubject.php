@@ -10,10 +10,14 @@ require '../partials/side-bar.php';
    
        
        
-        <!-- Content Area -->
+       
         <div class="col-md-9 col-lg-10">
+ add-subject-function
         <h3 class="text-left mb-5 mt-5">Add a New Subject</h1>
             <!-- Breadcrumb -->
+
+        <h3 class="text-left mb-5 mt-5">Add a Subject</h1>
+
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item" aria-current="page"><a href="../dashboard.php">Dashboard</a></li>
@@ -46,6 +50,8 @@ require '../partials/side-bar.php';
                 </form>
             </div>
 
+            
+
             <!-- Subject List Table -->
             <div class="card p-4">
                 <h3 class="card-title text-left">Subject List</h3>
@@ -64,11 +70,17 @@ require '../partials/side-bar.php';
                             <td><?= htmlspecialchars($subject['subject_code']) ?></td>
                             <td><?= htmlspecialchars($subject['subject_name']) ?></td>
                             <td>
+
                             <a href="delete.php?subject_code=<?= urlencode($subject['subject_code']) ?>" class="btn btn-danger btn-sm">Delete</a>
                                 <a href="edit.php?subject_code=<?= urlencode($subject['subject_code']) ?>" class="btn btn-primary btn-sm">Edit</a>
 
                               
                                 
+
+                                <a href="edit.php?subject_code=<?= urlencode($subject['subject_code']) ?>" class="btn btn-primary btn-sm">Edit</a>
+                            <a href="delete.php?subject_code=<?= urlencode($subject['subject_code']) ?>" class="btn btn-danger btn-sm">Delete</a>
+                            </td>
+
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>

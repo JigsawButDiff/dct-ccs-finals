@@ -12,7 +12,7 @@ require '../partials/side-bar.php';
        
         <!-- Content Area -->
         <div class="col-md-9 col-lg-10">
-        <h3 class="text-left mb-5 mt-5">Add A New Subject</h1>
+        <h3 class="text-left mb-5 mt-5">Add a New Subject</h1>
             <!-- Breadcrumb -->
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
@@ -42,13 +42,13 @@ require '../partials/side-bar.php';
                         <label for="subject_name" class="form-label">Subject Name</label>
                         <input type="text" class="form-control" id="subject_name" name="subject_name">
                     </div>
-                    <button type="submit" class="btn btn-primary btn-sm w-100">Add Subject</button>
+                    <button type="submit" class="btn btn-primary btn-sm w-100">Add a Subject</button>
                 </form>
             </div>
 
             <!-- Subject List Table -->
             <div class="card p-4">
-                <h3 class="card-title text-center">Subject List</h3>
+                <h3 class="card-title text-left">Subject List</h3>
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -63,13 +63,11 @@ require '../partials/side-bar.php';
                         <tr>
                             <td><?= htmlspecialchars($subject['subject_code']) ?></td>
                             <td><?= htmlspecialchars($subject['subject_name']) ?></td>
-                            <td>
-                                <!-- Edit Button (Green) -->
+                            <td>  
                                 <a href="edit.php?subject_code=<?= urlencode($subject['subject_code']) ?>" class="btn btn-primary btn-sm">Edit</a>
-
-                                <!-- Delete Button (Red) -->
                                 <a href="delete.php?subject_code=<?= urlencode($subject['subject_code']) ?>" class="btn btn-danger btn-sm">Delete</a>
-                            </td>
+                              
+                                
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>

@@ -1,4 +1,5 @@
 <?php
+
 // Include necessary files and functions
 include '../../functions.php';
 include '../partials/header.php';
@@ -52,13 +53,17 @@ if (isPost()) {
         </ul>
 
         <!-- Confirmation Form -->
-        <form method="POST" class="text-left">
-            <a href="addSubject.php" class="btn btn-secondary">Cancel</a>
-            <button type="submit" class="btn btn-danger">Delete Subject Record</button>
-        </form>
+        <form method="POST" action="deleteSubject.php?subject_code=<?= htmlspecialchars($_GET['subject_code'], ENT_QUOTES, 'UTF-8') ?>">
+    <a href="addSubject.php" class="btn btn-secondary">Cancel</a>
+    <button type="submit" class="btn btn-danger">Delete Subject Record</button>
+    
+</form>
+
     </div>
 
 </div>
+
+
 
 <?php
 include '../partials/footer.php';

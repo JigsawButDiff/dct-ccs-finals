@@ -154,89 +154,88 @@
     }
    
   
-function fetchSubjects() {
-    // Get the database connection
-    $conn = connectToDatabase();
-
-    try {
-        // Prepare SQL query to fetch all subjects
-        $sql = "SELECT * FROM subjects";
-        $stmt = $conn->prepare($sql);
-
-        // Execute the query
-        $stmt->execute();
-
-        // Fetch all subjects as an associative array
-        $subjects = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Return the list of subjects
-        return $subjects;
-    } catch (PDOException $e) {
-        // Return an empty array in case of error
-        return [];
-    }
-}
+    function fetchSubjects() {
+        try {
+            // Get the database connection
+            $conn = connectToDatabase();
     
+            // Prepare SQL query to fetch all subjects
+            $sql = "SELECT * FROM subjects ORDER BY subject_name ASC";
+            $stmt = $conn->prepare($sql);
+    
+            // Execute the query
+            $stmt->execute();
+    
+            // Fetch all subjects as an associative array
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            // Log the error and return an empty array
+            error_log("Database error: " . $e->getMessage());
+            return [];
+        }
+    }
 
 function addSubject($subject_code, $subject_name) {
     // Validate subject data
-    $validateSubjectData = validateSubjectData($subject_code, $subject_name);
+    $validationErrors = validateSubjectData($subject_code, $subject_name);
+    if (!empty($validationErrors)) {
+        echo displayErrors($validationErrors);
+        return false;
+    }
 
     // Check for duplicate subject data
-    $checkDuplicate = checkDuplicateSubjectData($subject_code, $subject_name);
-
-    // Handle validation errors
-    if (count($validateSubjectData) > 0) {
-        echo displayErrors($validateSubjectData);
-        return;
+    $duplicateErrors = checkDuplicateSubjectData($subject_code, $subject_name);
+    if (!empty($duplicateErrors)) {
+        echo displayErrors($duplicateErrors);
+        return false;
     }
-
-    // Handle duplicate data errors
-    if (count($checkDuplicate) == 1) {
-        echo displayErrors($checkDuplicate);
-        return;
-    }
-
-    // Get database connection
-    $conn = connectToDatabase();
 
     try {
-        // Prepare SQL query to insert subject into the database
+        // Get database connection
+        $conn = connectToDatabase();
+
+        // Prepare SQL query to insert data into the database
         $sql = "INSERT INTO subjects (subject_code, subject_name) VALUES (:subject_code, :subject_name)";
         $stmt = $conn->prepare($sql);
 
         // Bind parameters to the SQL query
-        $stmt->bindParam(':subject_code', $subject_code);
-        $stmt->bindParam(':subject_name', $subject_name);
+        $stmt->bindParam(':subject_code', $subject_code, PDO::PARAM_STR);
+        $stmt->bindParam(':subject_name', $subject_name, PDO::PARAM_STR);
 
-        // Execute the query and handle the result
+        // Execute the query
         if ($stmt->execute()) {
             return true; // Subject successfully added
         } else {
-            return "Failed to add subject."; // Query execution failed
+            echo displayErrors(["Failed to add subject."]);
+            return false;
         }
     } catch (PDOException $e) {
-        // Log and return error message if the query fails
+        // Log and display the error
         error_log("Database error: " . $e->getMessage()); // Log the error for debugging
-        return "Error: " . $e->getMessage();
+        echo displayErrors(["Error: " . $e->getMessage()]);
+        return false;
     }
 }
 
-    function validateSubjectData($subject_code, $subject_name ) {
-        $errors = [];
-    
-        // Check if subject_code is empty
-        if (empty($subject_code)) {
-            $errors[] = "Subject code is required.";
-        }
-    
-        // Check if subject_name is empty
-        if (empty($subject_name)) {
-            $errors[] = "Subject name is required.";
-        }
-    
-        return $errors;
+function validateSubjectData($subject_code, $subject_name) {
+    $errors = [];
+
+    // Validate subject code
+    if (empty($subject_code)) {
+        $errors[] = "Subject code is required.";
+    } elseif (!preg_match('/^[A-Z0-9]+$/', $subject_code)) {
+        $errors[] = "Subject code must contain only uppercase letters and numbers.";
     }
+
+    // Validate subject name
+    if (empty($subject_name)) {
+        $errors[] = "Subject name is required.";
+    } elseif (strlen($subject_name) > 100) {
+        $errors[] = "Subject name cannot exceed 100 characters.";
+    }
+
+    return $errors;
+}
     function checkDuplicateSubjectData($subject_code, $subject_name) {
         // Get database connection
         $conn = connectToDatabase();
@@ -257,12 +256,83 @@ function addSubject($subject_code, $subject_name) {
     
         // If a subject exists with the same code or name, return an error
         if ($existing_subject) {
-            return ["Duplicate subject found: The subject code or name already exists."];
+            return ["Duplicate subject found."];
         }
     
         return [];
     }
 
+    function checkDuplicateSubjectForEdit($subject_name) {
+        try {
+            // Get database connection
+            $conn = connectToDatabase();
+    
+            // Query to check if the subject name already exists
+            $sql = "SELECT 1 FROM subjects WHERE subject_name = :subject_name LIMIT 1";
+            $stmt = $conn->prepare($sql);
+    
+            // Bind parameters
+            $stmt->bindParam(':subject_name', $subject_name, PDO::PARAM_STR);
+    
+            // Execute the query
+            $stmt->execute();
+    
+            // Check if a matching record exists
+            if ($stmt->fetchColumn()) {
+                return ["Duplicate subject found: The subject name already exists."];
+            }
+    
+            return []; // No duplicates found
+        } catch (PDOException $e) {
+            // Log the error and return a user-friendly message
+            error_log("Database error: " . $e->getMessage());
+            return ["Database error: Unable to check for duplicate subjects."];
+        }
+    }
+    
+    function updateSubject($subject_code, $subject_name, $redirectPage) {
+        // Validate subject data
+        $validationErrors = validateSubjectData($subject_code, $subject_name);
+        if (!empty($validationErrors)) {
+            echo displayErrors($validationErrors);
+            return false;
+        }
+    
+        // Check for duplicate subject names
+        $duplicateErrors = checkDuplicateSubjectForEdit($subject_name);
+        if (!empty($duplicateErrors)) {
+            echo displayErrors($duplicateErrors);
+            return false;
+        }
+    
+        try {
+            // Get the database connection
+            $pdo = connectToDatabase();
+    
+            // Prepare the SQL query for updating the subject
+            $sql = "UPDATE subjects SET subject_name = :subject_name WHERE subject_code = :subject_code";
+            $stmt = $pdo->prepare($sql);
+    
+            // Bind the parameters
+            $stmt->bindParam(':subject_name', $subject_name, PDO::PARAM_STR);
+            $stmt->bindParam(':subject_code', $subject_code, PDO::PARAM_STR);
+    
+            // Execute the query
+            if ($stmt->execute()) {
+                // Redirect on success
+                echo "<script>window.location.href = '" . htmlspecialchars($redirectPage, ENT_QUOTES, 'UTF-8') . "';</script>";
+                return true;
+            } else {
+                echo displayErrors(["Failed to update the subject."]);
+                return false;
+            }
+        } catch (PDOException $e) {
+            // Log the error and display a user-friendly message
+            error_log("Database error: " . $e->getMessage());
+            echo displayErrors(["An unexpected error occurred while updating the subject."]);
+            return false;
+        }
+    }
         
     
     

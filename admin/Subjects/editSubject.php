@@ -4,10 +4,19 @@ include '../partials/header.php';
 
 $logoutPage = '../logout.php';
 $dashboardPage = '../dashboard.php';
-$subjectPage = './addSubject.php';
+$subjectPage = './addSubjects.php';
 include '../partials/side-bar.php';
 
 $subject_data = getSubjectByCode($_GET['subject_code']);
+
+?>
+<?php
+
+if(isPost()){
+    $subject_code = $subject_data['subject_code'];
+    $subject_name = postData('subject_name');
+    updateSubject($subject_code, $subject_name, "./addSubject.php");
+}
 
 ?>
 
@@ -27,7 +36,7 @@ $subject_data = getSubjectByCode($_GET['subject_code']);
     <!-- Edit Subject Form -->
     <div class="card p-4 mb-5">
         <form method="POST">
-            <!-- Subject Code (disabled) -->
+            <!-- Subject Code -->
             <div class="mb-3">
                 <label for="subject_code" class="form-label">Subject Code</label>
                 <input type="text" class="form-control" id="subject_code" name="subject_code" value="<?= htmlspecialchars($subject_data['subject_code']) ?>" disabled>

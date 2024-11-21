@@ -2,7 +2,6 @@
 require '../functions.php';
 guardDashboard();
 
-
 $title="Dashboard";
 $logoutPage = 'logout.php';
 $subjectPage = './Subjects/addSubject.php';
@@ -55,4 +54,3 @@ require './partials/side-bar.php';
 <?php
 include ('./partials/footer.php');
 ?>
-

@@ -24,7 +24,7 @@ if (!$subject_data) {
     exit();
 }
 
-// Handle form submission to delete the subject
+
 if (isPost()) {
     deleteSubject($subject_data['subject_code'], $subjectPage);
 }

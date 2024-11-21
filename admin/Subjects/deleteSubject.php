@@ -54,7 +54,7 @@ if (isPost()) {
         <!-- Confirmation Form -->
         <form method="POST" class="text-left">
             <a href="addSubject.php" class="btn btn-secondary">Cancel</a>
-            <button href="addSubject.php" class="btn btn-danger">Delete Subject Record</button>
+            <button type="submit" class="btn btn-danger">Delete Subject Record</button>
         </form>
     </div>
 

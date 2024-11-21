@@ -308,6 +308,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     addSubject($subject_code, $subject_name);
 }
 
+/**
+ * Deletes a subject from the database based on its subject code.
+ *
+ * @param string $subject_code The code of the subject to delete.
+ * @param string $redirectPage The page to redirect to after deletion.
+ * @return void
+ */
 function deleteSubject($subject_code, $redirectPage) {
     try {
         // Get the database connection
@@ -322,16 +329,18 @@ function deleteSubject($subject_code, $redirectPage) {
 
         // Execute the query
         if ($stmt->execute()) {
-            echo "<script>window.location.href = '$redirectPage';</script>";
+            // Redirect to the specified page on success
+            header("Location: $redirectPage");
+            exit; // Ensure the script stops after redirection
         } else {
-            return "Failed to delete the subject with code $subject_code.";
+            // Output an error message if the query failed
+            echo "<div class='alert alert-danger'>Failed to delete the subject with code $subject_code.</div>";
         }
     } catch (PDOException $e) {
-        return "Error: " . $e->getMessage();
+        // Handle database connection or query errors
+        echo "<div class='alert alert-danger'>Error: " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . "</div>";
     }
 }
-
-
 function logout($indexPage) {
     // Unset the 'email' session variable
     unset($_SESSION['email']);

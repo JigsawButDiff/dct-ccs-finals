@@ -263,34 +263,7 @@ function addSubject($subject_code, $subject_name) {
         return [];
     }
 
-       
-        // Get database connection
-        $conn = connectToDatabase();
-    
-        try {
-            // Prepare SQL query to insert subject into the database
-            $sql = "INSERT INTO Subjects (Subject_code, Subject_name) VALUES (:Subject_code, :Subject_name)";
-            $stmt = $conn->prepare($sql);
-    
-            // Bind parameters to the SQL query
-            $stmt->bindParam(':subject_code', $subject_code);
-            $stmt->bindParam(':subject_name', $subject_name);
-    
-            // Execute the query
-            if ($stmt->execute()) {
-                return true; // Subject successfully added
-            } else {
-                return "Failed to add subject."; // Query execution failed
-            }
-        } catch (PDOException $e) {
-            // Return error message if the query fails
-            return "Error: " . $e->getMessage();
-        }
-    
-    
-    
-
-
+        
     
     
 

@@ -12,7 +12,8 @@ require '../partials/side-bar.php';
        
        
         <div class="col-md-9 col-lg-10">
-        <h3 class="text-left mb-5 mt-5">Add A New Subject</h1>
+ add-subject-function
+        <h3 class="text-left mb-5 mt-5">Add a New Subject</h1>
             <!-- Breadcrumb -->
 
         <h3 class="text-left mb-5 mt-5">Add a Subject</h1>
@@ -69,12 +70,17 @@ require '../partials/side-bar.php';
                             <td><?= htmlspecialchars($subject['subject_code']) ?></td>
                             <td><?= htmlspecialchars($subject['subject_name']) ?></td>
                             <td>
-                                <!-- Edit Button (Green) -->
+
+                            <a href="delete.php?subject_code=<?= urlencode($subject['subject_code']) ?>" class="btn btn-danger btn-sm">Delete</a>
                                 <a href="edit.php?subject_code=<?= urlencode($subject['subject_code']) ?>" class="btn btn-primary btn-sm">Edit</a>
 
-                                <!-- Delete Button (Red) -->
-                                <a href="delete.php?subject_code=<?= urlencode($subject['subject_code']) ?>" class="btn btn-danger btn-sm">Delete</a>
+                              
+                                
+
+                                <a href="edit.php?subject_code=<?= urlencode($subject['subject_code']) ?>" class="btn btn-primary btn-sm">Edit</a>
+                            <a href="delete.php?subject_code=<?= urlencode($subject['subject_code']) ?>" class="btn btn-danger btn-sm">Delete</a>
                             </td>
+
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>

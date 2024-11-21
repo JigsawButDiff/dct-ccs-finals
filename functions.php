@@ -201,21 +201,23 @@ function addSubject($subject_code, $subject_name) {
     $conn = connectToDatabase();
 
     try {
-        
+        // Prepare SQL query to insert subject into the database
         $sql = "INSERT INTO subjects (subject_code, subject_name) VALUES (:subject_code, :subject_name)";
         $stmt = $conn->prepare($sql);
+
+        // Bind parameters to the SQL query
         $stmt->bindParam(':subject_code', $subject_code);
         $stmt->bindParam(':subject_name', $subject_name);
 
-      
+        // Execute the query and handle the result
         if ($stmt->execute()) {
-            return true;
+            return true; // Subject successfully added
         } else {
-            return "Failed to add subject."; 
+            return "Failed to add subject."; // Query execution failed
         }
     } catch (PDOException $e) {
-        
-        error_log("Database error: " . $e->getMessage()); 
+        // Log and return error message if the query fails
+        error_log("Database error: " . $e->getMessage()); // Log the error for debugging
         return "Error: " . $e->getMessage();
     }
 }
@@ -261,31 +263,32 @@ function addSubject($subject_code, $subject_name) {
         return [];
     }
 
-function checkDuplicateSubjectForEdit($subject_name) {
-    // Get database connection
-    $conn = connectToDatabase();
-
-    // Query to check if the subject_code already exists in the database
-    $sql = "SELECT * FROM subjects WHERE subject_name = :subject_name";
-    $stmt = $conn->prepare($sql);
-
-    // Bind parameters
-    $stmt->bindParam(':subject_name', $subject_name);
-
-
-    // Execute the query
-    $stmt->execute();
-
-    // Fetch the results
-    $existing_subject = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // If a subject exists with the same code or name, return an error
-    if ($existing_subject) {
-        return ["Duplicate subject found: The subject code or name already exists."];
-    }
-
-    return [];
-}
+       
+        // Get database connection
+        $conn = connectToDatabase();
+    
+        try {
+            // Prepare SQL query to insert subject into the database
+            $sql = "INSERT INTO Subjects (Subject_code, Subject_name) VALUES (:Subject_code, :Subject_name)";
+            $stmt = $conn->prepare($sql);
+    
+            // Bind parameters to the SQL query
+            $stmt->bindParam(':subject_code', $subject_code);
+            $stmt->bindParam(':subject_name', $subject_name);
+    
+            // Execute the query
+            if ($stmt->execute()) {
+                return true; // Subject successfully added
+            } else {
+                return "Failed to add subject."; // Query execution failed
+            }
+        } catch (PDOException $e) {
+            // Return error message if the query fails
+            return "Error: " . $e->getMessage();
+        }
+    
+    
+    
 
 
     
@@ -345,12 +348,10 @@ function logout($indexPage) {
     header("Location: $indexPage");
     exit;
 }
+
+
+
+
+
     
-
-
-
-
-
-
-
 ?>

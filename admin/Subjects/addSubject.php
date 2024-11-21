@@ -12,7 +12,12 @@ require '../partials/side-bar.php';
        
        
         <div class="col-md-9 col-lg-10">
+ add-subject-function
+        <h3 class="text-left mb-5 mt-5">Add a New Subject</h1>
+            <!-- Breadcrumb -->
+
         <h3 class="text-left mb-5 mt-5">Add a Subject</h1>
+
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item" aria-current="page"><a href="../dashboard.php">Dashboard</a></li>
@@ -41,7 +46,7 @@ require '../partials/side-bar.php';
                         <label for="subject_name" class="form-label">Subject Name</label>
                         <input type="text" class="form-control" id="subject_name" name="subject_name">
                     </div>
-                    <button type="submit" class="btn btn-primary btn-sm w-100">Add Subject</button>
+                    <button type="submit" class="btn btn-primary btn-sm w-100">Add a Subject</button>
                 </form>
             </div>
 
@@ -65,9 +70,17 @@ require '../partials/side-bar.php';
                             <td><?= htmlspecialchars($subject['subject_code']) ?></td>
                             <td><?= htmlspecialchars($subject['subject_name']) ?></td>
                             <td>
+
+                            <a href="delete.php?subject_code=<?= urlencode($subject['subject_code']) ?>" class="btn btn-danger btn-sm">Delete</a>
+                                <a href="edit.php?subject_code=<?= urlencode($subject['subject_code']) ?>" class="btn btn-primary btn-sm">Edit</a>
+
+                              
+                                
+
                                 <a href="edit.php?subject_code=<?= urlencode($subject['subject_code']) ?>" class="btn btn-primary btn-sm">Edit</a>
                             <a href="delete.php?subject_code=<?= urlencode($subject['subject_code']) ?>" class="btn btn-danger btn-sm">Delete</a>
                             </td>
+
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>

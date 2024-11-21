@@ -153,152 +153,37 @@
         return $errorHtml;
     }
    
-  
-function fetchSubjects() {
-    // Get the database connection
-    $conn = connectToDatabase();
+    function fetchSubjects() {
+        global $db; // Ensure you're using the global database connection variable
+        if (!$db) {
+            die("No Subject Found.");
+        }
+        $db = new mysqli('localhost', 'username', 'password', 'database_name');
 
-    try {
-        // Prepare SQL query to fetch all subjects
-        $sql = "SELECT * FROM subjects";
-        $stmt = $conn->prepare($sql);
-
-        // Execute the query
-        $stmt->execute();
-
-        // Fetch all subjects as an associative array
-        $subjects = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Return the list of subjects
+if ($db->connect_error) {
+    die("Connection failed: " . $db->connect_error);
+}
+    
+        if (!$db) {
+            throw new Exception("Database connection is not initialized.");
+        }
+    
+        $query = "SELECT * FROM subjects";
+        $result = $db->query($query);
+    
+        if (!$result) {
+            throw new Exception("Error executing query: " . $db->error);
+        }
+    
+        $subjects = [];
+        while ($row = $result->fetch_assoc()) {
+            $subjects[] = $row;
+        }
+    
         return $subjects;
-    } catch (PDOException $e) {
-        // Return an empty array in case of error
-        return [];
-    }
-}
-    
-function addSubject($subject_code, $subject_name) {
-    // Validate subject data
-    $validateSubjectData = validateSubjectData($subject_code, $subject_name);
-
-    // Check for duplicate subject data
-    $checkDuplicate = checkDuplicateSubjectData($subject_code, $subject_name);
-
-    // Handle validation errors
-    if (count($validateSubjectData) > 0) {
-        echo displayErrors($validateSubjectData);
-        return;
-    }
-
-    // Handle duplicate data errors
-    if (count($checkDuplicate) == 1) {
-        echo displayErrors($checkDuplicate);
-        return;
-    }
-
-    // Get database connection
-    $conn = connectToDatabase();
-
-    try {
-        // Prepare SQL query to insert subject into the database
-        $sql = "INSERT INTO subjects (subject_code, subject_name) VALUES (:subject_code, :subject_name)";
-        $stmt = $conn->prepare($sql);
-
-        // Bind parameters to the SQL query
-        $stmt->bindParam(':subject_code', $subject_code);
-        $stmt->bindParam(':subject_name', $subject_name);
-
-        // Execute the query and handle the result
-        if ($stmt->execute()) {
-            return true; // Subject successfully added
-        } else {
-            return "Failed to add subject."; // Query execution failed
-        }
-    } catch (PDOException $e) {
-        // Log and return error message if the query fails
-        error_log("Database error: " . $e->getMessage()); // Log the error for debugging
-        return "Error: " . $e->getMessage();
-    }
-}
-
-    function validateSubjectData($subject_code, $subject_name ) {
-        $errors = [];
-    
-        // Check if subject_code is empty
-        if (empty($subject_code)) {
-            $errors[] = "Subject code is required.";
-        }
-    
-        // Check if subject_name is empty
-        if (empty($subject_name)) {
-            $errors[] = "Subject name is required.";
-        }
-    
-        return $errors;
-    }
-    function checkDuplicateSubjectData($subject_code, $subject_name) {
-        // Get database connection
-        $conn = connectToDatabase();
-    
-        // Query to check if the subject_code already exists in the database
-        $sql = "SELECT * FROM subjects WHERE subject_code = :subject_code OR subject_name = :subject_name";
-        $stmt = $conn->prepare($sql);
-    
-        // Bind parameters
-        $stmt->bindParam(':subject_code', $subject_code);
-        $stmt->bindParam(':subject_name', $subject_name);
-    
-        // Execute the query
-        $stmt->execute();
-    
-        // Fetch the results
-        $existing_subject = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-        // If a subject exists with the same code or name, return an error
-        if ($existing_subject) {
-            return ["Duplicate subject found: The subject code or name already exists."];
-        }
-    
-        return [];
     }
     
-    // Function to check if the subject already exists in the database (duplicate check)
-function checkDuplicateSubjectForEdit($subject_name) {
-    // Get database connection
-    $conn = connectToDatabase();
 
-    // Query to check if the subject_code already exists in the database
-    $sql = "SELECT * FROM subjects WHERE subject_name = :subject_name";
-    $stmt = $conn->prepare($sql);
-
-    // Bind parameters
-    $stmt->bindParam(':subject_name', $subject_name);
-
-    // Execute the query
-    $stmt->execute();
-
-    // Fetch the results
-    $existing_subject = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // If a subject exists with the same code or name, return an error
-    if ($existing_subject) {
-        return ["Duplicate subject found: The subject code or name already exists."];
-    }
-
-    return [];
-}
-
-
-    
-    
-
-function getSubjectByCode($subject_code) {
-    $pdo = connectToDatabase();
-    $query = "SELECT * FROM subjects WHERE subject_code = :subject_code";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([':subject_code' => $subject_code]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
 
 
 
